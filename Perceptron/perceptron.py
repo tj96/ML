@@ -24,15 +24,30 @@ class Model():
         w_list = [np.zeros(d)] * n_class
 
         for t in range(e):
+            corr = [np.zeros(d)] * n_class
+            count = 0
+
             for x,y in zip(X,Y):
                 y1 = max([(np.dot(w_list[i],x),i) for i in range(n_class)])[1]
                 if y1 != y:
-                    w_list[y1] = w_list[y1] - x
-                    w_list[y] = w_list[y] + x
+                    corr[y1] = corr[y1] - x
+                    corr[y] = corr[y] + x
+                count += 1
+
+                if count == n:
+                    for i in range(n_class):
+                        w_list[i] = w_list[i] + l*corr[i]
+                    # print(w_list)
+                    # print(corr)
+                    corr = [np.zeros(d)] * n_class
+                    count = 0
+
+            for i in range(n_class):
+                w_list[i] = w_list[i] + l*corr[i]
 
         self.__wList = w_list;
         self.__nClass = n_class
-        print("Training Complete", t)
+        print("Training Complete")
     ####################
 
     def test(self, x):
@@ -40,13 +55,10 @@ class Model():
 
 
 def getParameters():
-    # print("Enter batch size (1 for online learning, 0 for full-batch):")
-    b=1
-    l=0.1
-    e = 200
-    # b= int(input())
-    # if b == 0:
-    #     b = 99999999
+    print("Enter batch size (1 for online learning, 0 for full-batch):")
+    b= int(input())
+    if b == 0:
+        b = 99999999
 
     print("Enter learning rate:")
     l = float(input())
